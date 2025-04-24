@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: kafka:9092  # Helm으로 설치된 Kafka 주소
+    bootstrap-servers: kafka.default.svc.cluster.local:9092  # Helm으로 설치된 Kafka 주소
     consumer:
       group-id: chat-group
       auto-offset-reset: earliest
@@ -9,3 +9,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    properties:
+        security.protocol: SASL_PLAINTEXT
+        sasl.mechanism: SCRAM-SHA-256
+        sasl.jaas.config: >
+          org.apache.kafka.common.security.scram.ScramLoginModule required
+          username="user1"
+          password="FT3UwmfcPH";

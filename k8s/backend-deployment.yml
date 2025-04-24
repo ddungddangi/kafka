@@ -8,6 +8,8 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+  type: NodePort
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,6 +27,6 @@ spec:
     spec:
       containers:
         - name: chat-backend
-          image: rainyheon/chat-backend:latest
+          image: iiilee0907/chat-backend:latest
           ports:
             - containerPort: 8080

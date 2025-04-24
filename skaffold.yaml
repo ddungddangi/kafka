@@ -1,0 +1,21 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: spring-chat
+build:
+  artifacts:
+    - image: iiilee0907/chat-backend
+      context: backend
+      jib: {}
+  tagPolicy:
+    sha256: {}
+deploy:
+  kubectl:
+    manifests:
+      - k8s/backend-deployment.yml
+portForward:
+  - resourceType: service
+    resourceName: chat-backend
+    namespace: default
+    port: 8080
+    localPort: 8080

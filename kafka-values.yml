@@ -17,7 +17,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  defaultStorageClass: ""
+  defaultStorageClass: "nfs-client"
   ## Security parameters
   ##
   security:
@@ -1069,7 +1069,7 @@ controller:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: "nfs-client"
+    storageClass: ""
     ## @param controller.persistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
@@ -1109,7 +1109,7 @@ controller:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: "nfs-client"
+    storageClass: ""
     ## @param controller.logPersistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
@@ -1529,7 +1529,7 @@ broker:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: "nfs-client"
+    storageClass: ""
     ## @param broker.persistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
@@ -1569,7 +1569,7 @@ broker:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: "nfs-client"
+    storageClass: ""
     ## @param broker.logPersistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
@@ -1597,7 +1597,7 @@ broker:
 service:
   ## @param service.type Kubernetes Service type
   ##
-  type: ClusterIP
+  type: LoadBalancer
   ## @param service.ports.client Kafka svc port for client connections
   ## @param service.ports.controller Kafka svc port for controller connections
   ## @param service.ports.interbroker Kafka svc port for inter-broker connections

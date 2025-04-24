@@ -6,7 +6,7 @@ function ChatRoom() {
   const ws = useRef(null);
 
   useEffect(() => {
-    ws.current = new WebSocket("ws://<BACKEND-HOST>/chat"); // 백엔드 주소로 수정
+    ws.current = new WebSocket("ws://chat-backend:8080/chat"); // 백엔드 주소로 수정
     ws.current.onmessage = (event) => {
       setMessages((prev) => [...prev, event.data]);
     };
