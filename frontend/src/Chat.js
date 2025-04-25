@@ -17,6 +17,7 @@ export default function Chat() {
 
     ws.onmessage = (event) => {
       setMessages(prev => [...prev, event.data]);
+      console.log("받은 메시지:", event.data);
     };
 
     ws.onclose = () => {
@@ -37,10 +38,11 @@ export default function Chat() {
   }, []);
 
   const sendMessage = () => {
-    if (!connected || !input) return;
+    if (!connected || input.trim() === "") return;
     wsRef.current.send(input);
-    setInput('');
+    setInput("");
   };
+  
 
   return (
     <div style={{ maxWidth: 400, margin: '0 auto' }}>
