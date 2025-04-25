@@ -20,9 +20,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 dir('backend') {
-                    sh '''
-                    docker build -t $BACKEND_IMAGE .
-                    '''
+                    sh 'docker build -t $BACKEND_IMAGE .'
                 }
             }
         }
@@ -38,9 +36,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 dir('frontend') {
-                    sh '''
-                    docker build -t $FRONTEND_IMAGE .
-                    '''
+                    sh 'docker build -t $FRONTEND_IMAGE .'
                 }
             }
         }
