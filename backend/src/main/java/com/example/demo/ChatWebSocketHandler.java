@@ -46,13 +46,17 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         logger.info("Kafka로 보냄 → topic='chat', payload='{}'", payload);
     }
 
-    public static void broadcast(String message) throws IOException {
+    // Kafka에서 수신한 메시지를 모든 클라이언트에게 브로드캐스트하는 메서드
+    public static void broadcast(String message) {
         for (WebSocketSession session : sessions) {
-            if (session.isOpen()) {
-                session.sendMessage(new TextMessage(message));
+            if (session.isOpen()) { // 세션이 열려있는 경우에만 메시지를 보냄
+                try {
+                    session.sendMessage(new TextMessage(message)); // 클라이언트에게 메시지 전송
+                } catch (IOException e) {
+                    logger.error("세션 {} 에게 메시지 전송 실패", session.getId(), e);
+                }
             }
         }
-        /* ---Log 추가*/
         logger.info("브로드캐스트 완료: {}", message);
     }
 }
