@@ -6,12 +6,19 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+/*---Log 추가----*/
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
+    /* ---Log 추가----*/
+    private static final Logger logger = LoggerFactory.getLogger(ChatWebSocketHandler.class);
+
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private static final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
@@ -23,11 +30,20 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.add(session);  // 연결된 세션 저장
+         /* ---Log 추가 ----*/
+        logger.info("새 세션 연결됨: {}, 현재 세션 수: {}", session.getId(), sessions.size());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+        /* ---Log 추가*/
+        String payload = message.getPayload();
+        logger.info("세션 {} 로부터 메시지 수신: {}", session.getId(), payload);
+        /* ---*/
         kafkaTemplate.send("chat", message.getPayload()); // 메시지를 Kafka로 보냄
+
+        /* ---Log 추가*/
+        logger.info("Kafka로 보냄 → topic='chat', payload='{}'", payload);
     }
 
     public static void broadcast(String message) throws IOException {
@@ -36,5 +52,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage(message));
             }
         }
+        /* ---Log 추가*/
+        logger.info("브로드캐스트 완료: {}", message);
     }
 }
