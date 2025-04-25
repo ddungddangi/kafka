@@ -1,27 +1,54 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'VERSION', defaultValue: 'v0.2', description: '도커 이미지 태그')
+    }
+
     environment {
-        DOCKER_IMAGE = 'gaemineunttungttung/backend:v0.2'
+        BACKEND_IMAGE = "gaemineunttungttung/backend:${params.VERSION}"
+        FRONTEND_IMAGE = "gaemineunttungttung/frontend:${params.VERSION}"
     }
 
     stages {
-        stage('Clone') {
+        stage('Git Clone') {
             steps {
                 git credentialsId: 'github-credentials', url: 'https://github.com/ddungddangi/kafka.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Backend Image') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE ./backend'
+                dir('backend') {
+                    sh '''
+                    docker build -t $BACKEND_IMAGE .
+                    '''
+                }
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Backend Image') {
             steps {
                 withDockerRegistry(credentialsId: 'docker-hub-credentials', url: '') {
-                    sh 'docker push $DOCKER_IMAGE'
+                    sh 'docker push $BACKEND_IMAGE'
+                }
+            }
+        }
+
+        stage('Build Frontend Image') {
+            steps {
+                dir('frontend') {
+                    sh '''
+                    docker build -t $FRONTEND_IMAGE .
+                    '''
+                }
+            }
+        }
+
+        stage('Push Frontend Image') {
+            steps {
+                withDockerRegistry(credentialsId: 'docker-hub-credentials', url: '') {
+                    sh 'docker push $FRONTEND_IMAGE'
                 }
             }
         }
