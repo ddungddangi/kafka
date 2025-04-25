@@ -1,0 +1,1 @@
+apiVersion: v2\nname: kafka\nversion: 0.1.0\nappVersion: "3.5"
