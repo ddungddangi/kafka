@@ -1,4 +1,27 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-nginx-conf
+data:
+  default.conf: |
+    server {
+        listen       80;
+        server_name  _;
+        location / {
+            root   /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+        }
+        location /ws {
+            proxy_pass http://chat-backend.default.svc.cluster.local:8080;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_read_timeout 86400;
+        }
+    }
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: frontend
@@ -8,7 +31,7 @@ spec:
   ports:
     - port: 80
       targetPort: 80
-  type: NodePort 
+  type: LoadBalancer 
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,7 +48,16 @@ spec:
         app: frontend
     spec:
       containers:
-        - name: frontend
-          image: iiilee0907/frontend:1
-          ports:
-            - containerPort: 80
+      - name: frontend
+        image: iiilee0907/frontend:2
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+      volumes:
+      - name: nginx-conf
+        configMap:
+          name: frontend-nginx-conf

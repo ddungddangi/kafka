@@ -1,13 +1,13 @@
 import React from 'react';
-import ChatRoom from './components/ChatRoom';
+import Chat from './Chat';
+import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <ChatRoom />
+      <Chat />
     </div>
   );
 }
 
 export default App;
-
