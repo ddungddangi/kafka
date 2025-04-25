@@ -49,7 +49,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: iiilee0907/frontend:1
+        image: iiilee0907/frontend:2
+        imagePullPolicy: Always
         ports:
           - containerPort: 80
         volumeMounts:
