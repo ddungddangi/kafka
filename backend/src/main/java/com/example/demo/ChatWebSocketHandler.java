@@ -27,7 +27,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        kafkaTemplate.send("chat-topic", message.getPayload()); // 메시지를 Kafka로 보냄
+        kafkaTemplate.send("chat", message.getPayload()); // 메시지를 Kafka로 보냄
     }
 
     public static void broadcast(String message) throws IOException {

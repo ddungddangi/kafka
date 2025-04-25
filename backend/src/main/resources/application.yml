@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: kafka.default.svc.cluster.local:9092  # Helm으로 설치된 Kafka 주소
+    bootstrap-servers: kafka:9092  # Helm으로 설치된 Kafka 주소
     consumer:
       group-id: chat-group
       auto-offset-reset: earliest

@@ -1,4 +1,4 @@
-package com.example.demmo.kafka;
+package com.example.demmo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
