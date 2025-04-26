@@ -397,7 +397,16 @@ tls:
 ##   - name: KAFKA_CFG_BACKGROUND_THREADS
 ##     value: "10"
 ##
-extraEnvVars: []
+extraEnvVars:
+  - name: KAFKA_CFG_PROCESS_ROLES
+    value: "broker,controller"
+  - name: KAFKA_CFG_NODE_ID
+    value: "1"
+  - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+    value: "1@kafka-infra-kafka-0.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093,2@kafka-infra-kafka-1.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093,3@kafka-infra-kafka-2.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093"
+  - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+    value: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+
 ## @param extraEnvVarsCM ConfigMap with extra environment variables
 ##
 extraEnvVarsCM: ""
