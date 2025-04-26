@@ -15,4 +15,4 @@ spring:
         sasl.jaas.config: >
           org.apache.kafka.common.security.scram.ScramLoginModule required
           username="user1"
-          password="7ifNQbQaUQ";
+          password="iLnBC8HsSz";
