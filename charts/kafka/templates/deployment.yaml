@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.controller.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "kafka.selectorLabels" . | nindent 6 }}
@@ -20,6 +20,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 9092
+          env:                 # <<< 이거 추가
+            {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: data
               mountPath: /bitnami/kafka
