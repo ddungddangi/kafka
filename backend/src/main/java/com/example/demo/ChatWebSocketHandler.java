@@ -6,7 +6,6 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-/*---Log 추가----*/
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ChatWebSocketHandler extends TextWebSocketHandler {
-    /* ---Log 추가----*/
-    private static final Logger logger = LoggerFactory.getLogger(ChatWebSocketHandler.class);
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatWebSocketHandler.class);
 
     private final KafkaTemplate<String, String> kafkaTemplate;
     private static final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
@@ -29,34 +27,37 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        sessions.add(session);  // 연결된 세션 저장
-         /* ---Log 추가 ----*/
-        logger.info("새 세션 연결됨: {}, 현재 세션 수: {}", session.getId(), sessions.size());
+        sessions.add(session);
+        logger.info("[ChatWebSocketHandler] [1] [연결] WebSocket 세션 연결 완료 (Client → Backend) | sessionId='{}' | 현재 연결 수={}", session.getId(), sessions.size());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        /* ---Log 추가*/
         String payload = message.getPayload();
-        logger.info("세션 {} 로부터 메시지 수신: {}", session.getId(), payload);
-        /* ---*/
-        kafkaTemplate.send("chat", message.getPayload()); // 메시지를 Kafka로 보냄
 
-        /* ---Log 추가*/
-        logger.info("Kafka로 보냄 → topic='chat', payload='{}'", payload);
+        // 2. WebSocket 메시지 수신
+        logger.info("[ChatWebSocketHandler] [2] [수신] WebSocket 메시지 수신 (Client → Backend) | sessionId='{}' | payload='{}'", session.getId(), payload);
+
+        // 3. Kafka로 메시지 전송
+        try {
+            kafkaTemplate.send("chat", payload);
+            logger.info("[ChatWebSocketHandler] [3] [전송] Kafka 메시지 전송 (Backend Producer → Kafka Broker) | topic='chat' | payload='{}'", payload);
+        } catch (Exception e) {
+            logger.error("[ChatWebSocketHandler] [Error] Kafka 메시지 전송 실패 | topic='chat' | payload='{}' | error='{}'", payload, e.getMessage(), e);
+        }
     }
 
-    // Kafka에서 수신한 메시지를 모든 클라이언트에게 브로드캐스트하는 메서드
+    // Kafka에서 수신한 메시지를 모든 WebSocket 세션에 브로드캐스트
     public static void broadcast(String message) {
         for (WebSocketSession session : sessions) {
-            if (session.isOpen()) { // 세션이 열려있는 경우에만 메시지를 보냄
+            if (session.isOpen()) {
                 try {
-                    session.sendMessage(new TextMessage(message)); // 클라이언트에게 메시지 전송
+                    session.sendMessage(new TextMessage(message));
                 } catch (IOException e) {
-                    logger.error("세션 {} 에게 메시지 전송 실패", session.getId(), e);
+                    logger.error("[ChatWebSocketHandler] [Error] WebSocket 브로드캐스트 실패 | sessionId='{}' | error='{}'", session.getId(), e.getMessage(), e);
                 }
             }
         }
-        logger.info("브로드캐스트 완료: {}", message);
+        logger.info("[ChatWebSocketHandler] [4] [브로드캐스트] Kafka 메시지 수신 및 WebSocket 브로드캐스트 (Kafka Broker → Backend Consumer) | payload='{}'", message);
     }
 }

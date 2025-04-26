@@ -8,6 +8,7 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+      nodePort: 2222
   type: NodePort
 
 ---
@@ -31,4 +32,3 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-            

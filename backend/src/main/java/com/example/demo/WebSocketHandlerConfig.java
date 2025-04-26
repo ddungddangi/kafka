@@ -12,6 +12,7 @@ import com.example.demo.ChatWebSocketHandler;
 @Configuration
 @EnableWebSocket
 public class WebSocketHandlerConfig implements WebSocketConfigurer {
+
     private static final Logger logger = LoggerFactory.getLogger(WebSocketHandlerConfig.class);
     private final ChatWebSocketHandler handler;
 
@@ -21,9 +22,13 @@ public class WebSocketHandlerConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        logger.info(">>> WebSocketHandlerConfig 등록: /ws 핸들러 바인딩 시작");
-        registry.addHandler(handler, "/ws")
-                .setAllowedOriginPatterns("*");
-        logger.info(">>> WebSocketHandlerConfig 완료: /ws 바인딩됨");
+        try {
+            logger.info("[WebSocketHandlerConfig] WebSocket 핸들러 등록 시작: 경로='/ws'");
+            registry.addHandler(handler, "/ws")
+                    .setAllowedOriginPatterns("*");
+            logger.info("[WebSocketHandlerConfig] WebSocket 핸들러 등록 완료: 경로='/ws'");
+        } catch (Exception e) {
+            logger.error("[WebSocketHandlerConfig] [Error] WebSocket 핸들러 등록 실패 | error='{}'", e.getMessage(), e);
+        }
     }
 }
