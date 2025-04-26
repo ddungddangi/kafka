@@ -11,39 +11,39 @@ export default function Chat() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("[Chat.js] [1] [연결 완료] WebSocket 연결 성공 (Client → Backend)");
+      console.log("[Frontend] [1] [연결 완료] WebSocket 연결 성공 (Client → Backend)");
       setConnected(true);
     };
 
     ws.onmessage = (event) => {
-      console.log("[Chat.js] [2] [메시지 수신] 서버로부터 메시지 수신 (Backend → Client) | message=", event.data);
+      console.log("[Frontend] [2] [메시지 수신] 서버로부터 메시지 수신 (Backend → Client) | message=", event.data);
       setMessages(prev => [...prev, event.data]);
     };
 
     ws.onclose = () => {
-      console.warn("[Chat.js] [3] [연결 종료] WebSocket 연결 끊김 (Client → Backend)");
+      console.warn("[Frontend] [3] [연결 종료] WebSocket 연결 끊김 (Client → Backend)");
       setConnected(false);
       setTimeout(() => {
-        console.log("[Chat.js] [4] [재연결 준비] WebSocket 재연결 대기 중...");
+        console.log("[Frontend] [4] [재연결 준비] WebSocket 재연결 대기 중...");
         setMessages([]);
         setInput('');
       }, 1000);
     };
 
     ws.onerror = (err) => {
-      console.error("[Chat.js] [Error] WebSocket 오류 발생 | error=", err);
+      console.error("[Frontend] [Error] WebSocket 오류 발생 | error=", err);
     };
 
     return () => {
       ws.close();
-      console.warn("[Chat.js] [5] [연결 종료] 컴포넌트 언마운트 - WebSocket 연결 해제");
+      console.warn("[Frontend] [5] [연결 종료] 컴포넌트 언마운트 - WebSocket 연결 해제");
     };
   }, []);
 
   const sendMessage = () => {
     if (!connected || input.trim() === "") return;
     wsRef.current.send(input);
-    console.log("[Chat.js] [6] [메시지 전송] 클라이언트에서 서버로 메시지 전송 (Client → Backend) | message=", input);
+    console.log("[Frontend] [6] [메시지 전송] 클라이언트에서 서버로 메시지 전송 (Client → Backend) | message=", input);
     setInput("");
   };
 
