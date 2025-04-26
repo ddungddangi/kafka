@@ -16,7 +16,7 @@ java {
 
 jib {
     to {
-        image = 'iiilee0907/chat-backend'
+        image = 'iiilee0907/chat-backend-ec2'
     }
 }
 
