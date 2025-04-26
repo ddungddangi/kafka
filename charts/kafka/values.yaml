@@ -191,6 +191,7 @@ listeners:
     containerPort: 9093
     protocol: SASL_PLAINTEXT
     sslClientAuth: ""
+    replicaCount: 3
   ## @param listeners.interbroker.name Name for the Kafka inter-broker listener
   ## @param listeners.interbroker.containerPort Port for the Kafka inter-broker listener
   ## @param listeners.interbroker.protocol Security protocol for the Kafka inter-broker listener. Allowed values are 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
@@ -2480,4 +2481,12 @@ provisioning:
   ##         containerPort: 1234
   ##
   initContainers: []
+kafka:
+  persistence:
+    enabled: true
+    storageClass: nfs-client
 
+zookeeper:
+  persistence:
+    enabled: true
+    storageClass: nfs-client

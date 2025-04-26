@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.controller.replicaCount }}
   selector:
     matchLabels:
       {{- include "kafka.selectorLabels" . | nindent 6 }}
