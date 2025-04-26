@@ -7,6 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"   # WebSocket 연결 유지
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
 spec:
   ingressClassName: nginx
   rules:
@@ -30,7 +31,7 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
-  type: LoadBalancer
+  type: NodePort
 
 ---
 apiVersion: apps/v1
@@ -53,3 +54,4 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+            
