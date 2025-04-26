@@ -1,16 +1,19 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "kafka.fullname" . }}
   labels:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "kafka.fullname" . }}-headless
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "kafka.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      annotations:
+        kafka-node-id: "{{ .StatefulSetOrdinal | add 1 }}"
       labels:
         {{- include "kafka.selectorLabels" . | nindent 8 }}
     spec:
@@ -20,15 +23,20 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 9092
-          env:                 # <<< 이거 추가
+          env:
             {{- with .Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
             - name: data
               mountPath: /bitnami/kafka
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ include "kafka.fullname" . }}-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 8Gi
+        storageClassName: nfs-client
 
