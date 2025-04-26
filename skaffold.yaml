@@ -4,7 +4,7 @@ metadata:
   name: spring-chat
 build:
   artifacts:
-    - image: iiilee0907/chat-backend
+    - image: iiilee0907/chat-backend-ec2
       context: backend
       jib: {}
   tagPolicy:
