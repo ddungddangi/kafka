@@ -406,6 +406,8 @@ extraEnvVars:
     value: "1@kafka-infra-kafka-0.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093,2@kafka-infra-kafka-1.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093,3@kafka-infra-kafka-2.kafka-infra-kafka-headless.kafka-infra.svc.cluster.local:9093"
   - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
     value: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+  - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES   
+    value: "CONTROLLER"
 
 ## @param extraEnvVarsCM ConfigMap with extra environment variables
 ##
