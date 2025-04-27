@@ -2,6 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: frontend-nginx-conf
+  labels:
+    app:  frontend
+    argocd.argoproj.io/instance: frontend
 data:
   default.conf: |
     server {
