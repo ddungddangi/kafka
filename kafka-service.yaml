@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: default
+  labels:
+    app.kubernetes.io/component: kafka
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.1
+    argocd.argoproj.io/instance: kafka
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+  ports:
+    - name: tcp-client
+      protocol: TCP
+      port: 9092
+      targetPort: client
+

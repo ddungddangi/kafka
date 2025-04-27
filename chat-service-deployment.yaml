@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-service
+  namespace: default
+  labels:
+    app: chat-service
+    argocd.argoproj.io/instance: chat-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-service
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: chat-service
+        argocd.argoproj.io/instance: chat-service
+    spec:
+      containers:
+      - name: chat-service
+        image: 8bin/chat-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://chat-mysql:3306/chat_service_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: example
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: update
+        - name: SPRING_JPA_SHOW_SQL
+          value: "true"
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+          value: "true"
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+          value: org.hibernate.dialect.MySQL8Dialect
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka:9092
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+

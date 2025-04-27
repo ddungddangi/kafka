@@ -1,0 +1,143 @@
+# chat-backend (문제 없음)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chat-backend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: backend
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# chat-service
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chat-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: k8s/chat-service
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# frontend
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: frontend
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# kafka
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: k8s/kafka
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# mysql
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mysql
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: k8s/mysql
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# nfs-client-provisioner (별 문제 없을 가능성)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nfs-client-provisioner
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/ddungddangi/kafka.git'
+    targetRevision: main
+    path: provisioner
+    directory:
+      recurse: true
+      include: "*.yaml"
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

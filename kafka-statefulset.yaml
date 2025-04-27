@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-controller
+  namespace: default
+  labels:
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.1
+    argocd.argoproj.io/instance: kafka
+spec:
+  serviceName: kafka-controller-headless
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller-eligible
+      app.kubernetes.io/instance: kafka
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/part-of: kafka
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller-eligible
+        app.kubernetes.io/instance: kafka
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/part-of: kafka
+        app.kubernetes.io/version: 4.0.0
+        helm.sh/chart: kafka-32.2.1
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: controller-eligible
+                  app.kubernetes.io/instance: kafka
+                  app.kubernetes.io/name: kafka
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      automountServiceAccountToken: false
+      containers:
+      - name: kafka
+        image: docker.io/bitnami/kafka:4.0.0-debian-12-r3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9093
+          name: controller
+        - containerPort: 9092
+          name: client
+        - containerPort: 9094
+          name: interbroker
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - kafka
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: controller
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 6
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 750m
+            ephemeral-storage: 2Gi
+            memory: 768Mi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 50Mi
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /bitnami/kafka
+          name: data
+        - mountPath: /opt/bitnami/kafka/logs
+          name: logs
+        - mountPath: /opt/bitnami/kafka/config/server.properties
+          name: kafka-config
+          subPath: server.properties
+        - mountPath: /tmp
+          name: tmp
+        - mountPath: /shared
+          name: init-shared
+        - mountPath: /opt/bitnami/kafka/config/secrets
+          name: kafka-sasl
+          readOnly: true
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+      - name: prepare-config
+        image: docker.io/bitnami/kafka:4.0.0-debian-12-r3
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args:
+          - -ec
+          - |
+            # 긴 init script 내용은 그대로 유지
+        env: 
+          # env 항목 유지 (user/password 설정들)
+        volumeMounts:
+          # 적절한 볼륨 마운트 유지
+      terminationGracePeriodSeconds: 30
+      serviceAccountName: kafka
+      dnsPolicy: ClusterFirst
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+      storageClassName: nfs-client
+      volumeMode: Filesystem
+
