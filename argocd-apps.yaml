@@ -33,7 +33,7 @@ spec:
   source:
     repoURL: 'https://github.com/ddungddangi/kafka.git'
     targetRevision: main
-    path: k8s/chat-service
+    path: argoCD/chat-service
     directory:
       recurse: true
       include: "*.yaml"
@@ -81,7 +81,7 @@ spec:
   source:
     repoURL: 'https://github.com/ddungddangi/kafka.git'
     targetRevision: main
-    path: k8s/kafka
+    path: argoCD/kafka
     directory:
       recurse: true
       include: "*.yaml"
@@ -105,7 +105,7 @@ spec:
   source:
     repoURL: 'https://github.com/ddungddangi/kafka.git'
     targetRevision: main
-    path: k8s/mysql
+    path: argoCD/mysql
     directory:
       recurse: true
       include: "*.yaml"
