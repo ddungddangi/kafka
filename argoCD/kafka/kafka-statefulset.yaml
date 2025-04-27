@@ -58,6 +58,22 @@ spec:
         env:
         - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
           value: CONTROLLER
+        - name: KAFKA_CFG_LISTENERS
+          value: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+        - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+        - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+          value: "0@kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9093,1@kafka-controller-1.kafka-controller-headless.default.svc.cluster.local:9093,2@kafka-controller-2.kafka-controller-headless.default.svc.cluster.local:9093"
+        - name: KAFKA_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: kafka-credentials
+              key: username
+        - name: KAFKA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kafka-credentials
+              key: password
         livenessProbe:
           exec:
             command:
@@ -114,11 +130,16 @@ spec:
         args:
           - -ec
           - |
-            # 긴 init script 내용은 그대로 유지
-        env: 
-          # env 항목 유지 (user/password 설정들)
+            POD_ID=$(hostname | awk -F '-' '{print $NF}')
+            echo "node.id=$POD_ID" >> /opt/bitnami/kafka/config/server.properties
+            echo "process.roles=broker,controller" >> /opt/bitnami/kafka/config/server.properties
+            echo "controller.quorum.voters=0@kafka-controller-0.kafka-controller-headless.default.svc.cluster.local:9093,1@kafka-controller-1.kafka-controller-headless.default.svc.cluster.local:9093,2@kafka-controller-2.kafka-controller-headless.default.svc.cluster.local:9093" >> /opt/bitnami/kafka/config/server.properties
+            echo "listeners=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093" >> /opt/bitnami/kafka/config/server.properties
+            echo "listener.security.protocol.map=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT" >> /opt/bitnami/kafka/config/server.properties
+            echo "inter.broker.listener.name=PLAINTEXT" >> /opt/bitnami/kafka/config/server.properties
         volumeMounts:
-          # 적절한 볼륨 마운트 유지
+        - mountPath: /opt/bitnami/kafka/config
+          name: kafka-config
       terminationGracePeriodSeconds: 30
       serviceAccountName: kafka
       dnsPolicy: ClusterFirst

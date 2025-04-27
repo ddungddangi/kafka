@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-controller-configuration
+  namespace: default
+data:
+  server.properties: |
+    listener.security.protocol.map=PLAINTEXT:PLAINTEXT
+    listener.name.controller=PLAINTEXT
+    # 필요한 Kafka 설정 추가
+
