@@ -55,6 +55,9 @@ spec:
           name: client
         - containerPort: 9094
           name: interbroker
+        env:
+        - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+          value: CONTROLLER
         livenessProbe:
           exec:
             command:
