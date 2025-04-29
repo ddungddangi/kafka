@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-frontend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-frontend
+  template:
+    metadata:
+      labels:
+        app: chat-frontend
+    spec:
+      containers:
+        - name: chat-frontend
+          image: gaemineunttungttung/frontend:latest  #예: docker.io/username/chat-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"

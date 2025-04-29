@@ -1,0 +1,64 @@
+# 1. PersistentVolumeClaim (PVC) - 저장공간
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chat-mysql-pvc
+  namespace: default
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+# 2. Deployment - MySQL 서버 배포
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-mysql
+  labels:
+    app: chat-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-mysql
+  template:
+    metadata:
+      labels:
+        app: chat-mysql
+    spec:
+      containers:
+        - name: chat-mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: example
+            - name: MYSQL_DATABASE
+              value: chat_service_db  # ✅ 채팅 서비스 전용 DB 이름
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: chat-mysql-pvc
+
+---
+# 3. Service - MySQL 접근용
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-mysql
+  namespace: default
+spec:
+  selector:
+    app: chat-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+

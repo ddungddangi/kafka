@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-service
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-service
+  template:
+    metadata:
+      labels:
+        app: chat-service
+    spec:
+      containers:
+        - name: chat-service
+          image: gaemineunttungttung/chat-serivce:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://chat-mysql:3306/chat_service_db?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf-8
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: example
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: SPRING_JPA_SHOW_SQL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              value: org.hibernate.dialect.MySQL8Dialect
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            # Kafka 인증 관련 환경변수 (Secret 연동)
+            - name: KAFKA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: username
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-credentials
+                  key: password
+            # Spring에 Kafka 인증정보 연결
+            - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
+              value: SASL_PLAINTEXT
+            - name: SPRING_KAFKA_PROPERTIES_SASL_MECHANISM
+              value: SCRAM-SHA-256
+            - name: SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG
+              value: |
+                org.apache.kafka.common.security.scram.ScramLoginModule required username="user1" password="vyJeW9I6qv";
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: chat-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30081

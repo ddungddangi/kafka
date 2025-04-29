@@ -1,0 +1,19 @@
+# kube-prom-values.yaml
+grafana:
+  enabled: true
+  adminPassword: prom-operator
+  service:
+    type: NodePort
+    nodePort: 30030  # 원하는 포트 설정 가능
+
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30090
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: true
+
+# Node Exporter, kube-state-metrics 등 기본 활성화됨

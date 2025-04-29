@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: log-generator
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: log-generator
+  template:
+    metadata:
+      labels:
+        app: log-generator
+    spec:
+      containers:
+      - name: log-generator
+        image: python:3.9-slim
+        command: ["python", "-u", "-c"]
+        args:
+          - |
+            import time, json, random
+            users = ["kim", "lee", "park"]
+            actions = [
+              "시스템에 접속했습니다",
+              "로그인을 실패했습니다",
+              "설정 페이지에 접근했습니다",
+              "파일을 업로드했습니다"
+            ]
+            while True:
+                level = random.choice(["INFO", "WARN", "ERROR"])
+                user = random.choice(users)
+                action = random.choice(actions)
+                message = f"[{level}] 사용자 {user}이 {action}"
+                log = {
+                  "timestamp": time.strftime('%Y-%m-%dT%H:%M:%S'),
+                  "level": level,
+                  "user": user,
+                  "message": message
+                }
+                print(json.dumps(log))
+                time.sleep(5)

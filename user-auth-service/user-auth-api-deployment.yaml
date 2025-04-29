@@ -1,0 +1,33 @@
+# user-auth-api-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-auth-api
+  labels:
+    app: user-auth-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-auth-api
+  template:
+    metadata:
+      labels:
+        app: user-auth-api
+    spec:
+      containers:
+      - name: user-auth-api
+        image: gaemineunttungttung/backend:latest  # <-- 네 이미지로 수정
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://mysql:3306/user_service_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: example
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: create
+

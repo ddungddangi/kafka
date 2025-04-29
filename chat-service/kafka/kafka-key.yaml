@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-credentials
+type: Opaque
+data:
+  username: dXNlcjE=        # user1를 base64로 인코딩한 값
+  password: bWJVWWRCOHBESQ==
+  # kubectl get secret kafka-user-passwords --namespace default -o jsonpath='{.data.client-passwords}' | base64 -d | cut -d , -f 1
+  # 위의 명령어를 치고 나온 password값(tZES4Txl4T)을 인코딩한다
+  # echo -n 'tZES4Txl4T' | base64
